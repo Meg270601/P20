@@ -19,15 +19,18 @@ public:
 
 public slots:
     void draw(int x, int y);
+    void clear_screen();
 
 private:
     Ui::Receiver *ui;
-    std::vector<int> pointsx;
-    std::vector<int> pointsy;
+    std::vector<u_int16_t> pointsx;
+    std::vector<u_int16_t> pointsy;
 
 protected:
     void paintEvent(QPaintEvent *event);
 
+private slots:
+    void on_exit_button_clicked();
 };
 
 #endif // RECEIVER_H

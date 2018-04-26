@@ -14,11 +14,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     send.cpp \
-    receiver.cpp
+    receiver.cpp \
+    cereal.cpp
 
 HEADERS  += \
     send.h \
-    receiver.h
+    receiver.h \
+    cereal.h
 
 FORMS    += \
     send.ui \

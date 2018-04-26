@@ -6,6 +6,7 @@
 
 #include "send.h"
 #include "receiver.h"
+#include "cereal.h"
 
 void* send(void* thread_id);
 
@@ -24,9 +25,14 @@ int main(int argc, char *argv[])
     Receiver r;
     r.setWindowTitle("Receive");
     r.show();
+    Cereal c;
 
     QObject::connect(&s, SIGNAL(draw(int,int)),
                      &r, SLOT(draw(int,int)));
+    QObject::connect(&s, SIGNAL(draw(int,int)),
+                     &c, SLOT(draw(int,int)));
+    QObject::connect(&s, SIGNAL(clear_screen()),
+                     &r, SLOT(clear_screen()));
 
     // starting worker thread(s)
     int rc;

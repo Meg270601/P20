@@ -20,13 +20,14 @@ public:
 
 signals:
     void draw(int x, int y);
+    void clear_screen();
 
 private:
     Ui::Send *ui;
-    std::vector<int> pointsx;
-    std::vector<int> pointsy;
+    std::vector<u_int16_t> pointsx;
+    std::vector<u_int16_t> pointsy;
 private slots:
-    void on_pushButton_clicked();
+    void on_clear_screen_button_clicked();
 
 protected:
     void mouseMoveEvent(QMouseEvent * cursor);
