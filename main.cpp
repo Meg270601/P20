@@ -7,15 +7,7 @@
 #include "send.h"
 #include "receiver.h"
 
-void* worker(void* thread_id)
-{
-    long tid = (long)thread_id;
-    // do something....
-    qDebug() << "Worker thread " << tid << "started.";
-
-    // end thread
-    pthread_exit(NULL);
-}
+void* send(void* thread_id);
 
 int main(int argc, char *argv[])
 {
@@ -33,10 +25,13 @@ int main(int argc, char *argv[])
     r.setWindowTitle("Receive");
     r.show();
 
+    QObject::connect(&s, SIGNAL(draw(int,int)),
+                     &r, SLOT(draw(int,int)));
+
     // starting worker thread(s)
     int rc;
-    pthread_t worker_thread;
-    rc = pthread_create(&worker_thread, NULL, worker, (void*)1);
+    pthread_t send_thread;
+    rc = pthread_create(&send_thread, NULL, send, (void*)1);
     if (rc) {
         qDebug() << "Unable to start worker thread.";
         exit(1);
@@ -52,4 +47,14 @@ int main(int argc, char *argv[])
 
     // exit
     return ret;
+}
+
+void* send(void* thread_id)
+{
+    long tid = (long)thread_id;
+    // do something....
+    qDebug() << "Worker thread " << tid << "started.";
+
+    // end thread
+    pthread_exit(NULL);
 }

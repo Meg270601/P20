@@ -1,9 +1,12 @@
-#include "send.h"
+#include "send2.h"
 #include "ui_send.h"
 #include <QPainter>
 #include <QDebug>
 #include <QMouseEvent>
 #include <vector>
+
+std::vector<int> pointsx;
+std::vector<int> pointsy;
 
 Send::Send(QWidget *parent) :
     QWidget(parent),
@@ -23,13 +26,11 @@ void Send::mouseMoveEvent(QMouseEvent * cursor)
     qDebug() << "Mouse x " << cursor->x() << " Mouse y " << cursor->y();
     pointsy.push_back(cursor->y());
     pointsx.push_back(cursor->x());
-    count++;
-    draw(cursor->x(), cursor->y());
     update();
 }
 void Send::paintEvent(QPaintEvent * event)
 {
-   qDebug() << "painting s";
+   qDebug() << "painting";
    QPainter painter(this);
    QPen pen;
    QFont font;
@@ -43,19 +44,4 @@ void Send::paintEvent(QPaintEvent * event)
    for (int i = 0; i < pointsx.size(); i++) {
     painter.drawPoint(pointsx[i], pointsy[i]);
    }
-}
-
-void Send::on_pushButton_clicked()
-{
-    pointsx.clear();
-    pointsy.clear();
-    update();
-}
-
-int Send::get_x(int i) {
-    return pointsx[i];
-}
-
-int Send::get_y(int i) {
-    return pointsy[i];
 }

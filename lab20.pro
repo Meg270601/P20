@@ -13,15 +13,15 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp \
-    receiver.cpp \
-    send.cpp
+    send.cpp \
+    receiver.cpp
 
 HEADERS  += \
-    receiver.h \
-    send.h
+    send.h \
+    receiver.h
 
 FORMS    += \
-    receiver.ui \
-    send.ui
+    send.ui \
+    receiver.ui
 
 LIBS += -L/usr/local/lib -lwiringPi -lpthread
