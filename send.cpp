@@ -23,7 +23,7 @@ void Send::mouseMoveEvent(QMouseEvent * cursor)
     qDebug() << "Mouse x " << cursor->x() << " Mouse y " << cursor->y();
     pointsy.push_back(cursor->y());
     pointsx.push_back(cursor->x());
-    count++;
+//    count++;
     draw(cursor->x(), cursor->y());
     update();
 }

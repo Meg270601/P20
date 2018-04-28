@@ -28,9 +28,9 @@ private:
 
 protected:
     void paintEvent(QPaintEvent *event);
-
+/*
 private slots:
-    void on_exit_button_clicked();
+    void on_exit_button_clicked();*/
 };
 
 #endif // RECEIVER_H

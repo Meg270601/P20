@@ -14,16 +14,18 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     send.cpp \
-    receiver.cpp \
-    cereal.cpp
+    cereal.cpp \
+    receiver.cpp
 
 HEADERS  += \
     send.h \
-    receiver.h \
-    cereal.h
+    cereal.h \
+    receiver.h
 
 FORMS    += \
     send.ui \
-    receiver.ui
+    receive.ui
 
 LIBS += -L/usr/local/lib -lwiringPi -lpthread
+
+CONFIG += c++11

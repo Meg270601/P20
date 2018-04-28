@@ -16,7 +16,7 @@ public:
     ~Send();
     int get_x(int i);
     int get_y(int i);
-    int count = 0;
+//    int count = 0;
 
 signals:
     void draw(int x, int y);
