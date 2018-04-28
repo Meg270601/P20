@@ -9,6 +9,7 @@
 #include "cereal.h"
 
 void* send(void* thread_id);
+void* receive(void* thread_id);
 
 int main(int argc, char *argv[])
 {
@@ -27,21 +28,28 @@ int main(int argc, char *argv[])
     r.show();
     Cereal c;
 
-/*    QObject::connect(&s, SIGNAL(draw(int,int)),
-                     &r, SLOT(draw(int,int)));*/
     QObject::connect(&s, SIGNAL(draw(int,int)),
                      &c, SLOT(in(int,int)));
     QObject::connect(&c, SIGNAL(out(int,int)),
                      &r, SLOT(draw(int,int)));
     QObject::connect(&s, SIGNAL(clear_screen()),
+                     &c, SLOT(clear_screen()));
+    QObject::connect(&c, SIGNAL(clear_out()),
                      &r, SLOT(clear_screen()));
 
     // starting worker thread(s)
     int rc;
+    int sc;
     pthread_t send_thread;
-    rc = pthread_create(&send_thread, NULL, send, (void*)1);
+    pthread_t receive_thread;
+    sc = pthread_create(&send_thread, NULL, send, (void*)1);
+    if (sc) {
+        qDebug() << "Unable to start send thread.";
+        exit(1);
+    }
+    rc = pthread_create(&receive_thread, NULL, receive, (void*)2);
     if (rc) {
-        qDebug() << "Unable to start worker thread.";
+        qDebug() << "Unable to start send thread.";
         exit(1);
     }
 
@@ -61,7 +69,17 @@ void* send(void* thread_id)
 {
     long tid = (long)thread_id;
     // do something....
-    qDebug() << "Worker thread " << tid << "started.";
+    qDebug() << "Send thread " << tid << "started.";
+
+    // end thread
+    pthread_exit(NULL);
+}
+
+void* receive(void* thread_id)
+{
+    long tid = (long)thread_id;
+    // do something....
+    qDebug() << "Receive thread " << tid << "started.";
 
     // end thread
     pthread_exit(NULL);

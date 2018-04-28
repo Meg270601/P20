@@ -13,7 +13,7 @@ public:
 
 signals:
     void out(int x, int y);
-//    void clear_screen();
+    void clear_out();
 
 public slots:
     void in(int x, int y);

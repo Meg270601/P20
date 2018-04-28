@@ -27,6 +27,10 @@ void Cereal::decerealiser(int bin[32]) {
         y += (bin[i+16] * pow(2, i));
     }
     qDebug() << x << " " << y;
+    //clear screen is encoded as 10000
+    if (x == 10000 & y == 10000) {
+        clear_out();
+    }
     out(x, y);
 }
 
@@ -35,5 +39,6 @@ void Cereal::in(int x, int y) {
 }
 
 void Cereal::clear_screen() {
-
+    //clear screen is encoded as 10000
+    cerealiser(10000, 10000);
 }
