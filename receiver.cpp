@@ -1,5 +1,5 @@
 #include "receiver.h"
-#include "ui_receiver.h"
+#include "ui_receive.h"
 #include <QPainter>
 #include <QDebug>
 #include <QMouseEvent>
@@ -7,7 +7,7 @@
 
 Receiver::Receiver(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::Receiver)
+    ui(new Ui::Receive)
 {
     ui->setupUi(this);
 }

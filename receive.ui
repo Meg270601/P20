@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Receiver</class>
- <widget class="QWidget" name="Receiver">
+ <class>Receive</class>
+ <widget class="QWidget" name="Receive">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -32,7 +32,7 @@
   <connection>
    <sender>exit_button</sender>
    <signal>clicked()</signal>
-   <receiver>Receiver</receiver>
+   <receiver>Receive</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">

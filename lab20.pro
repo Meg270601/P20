@@ -20,7 +20,8 @@ SOURCES += main.cpp \
 HEADERS  += \
     send.h \
     cereal.h \
-    receiver.h
+    receiver.h \
+    safe_queue.h
 
 FORMS    += \
     send.ui \

@@ -3,13 +3,24 @@
 #include <QObject>
 #include <pthread.h>
 #include <wiringPi.h>
-
+#include <queue>
+#include <iostream>
 #include "send.h"
 #include "receiver.h"
 #include "cereal.h"
+#include <safe_queue.h>
 
-void* send(void* thread_id);
-void* receive(void* thread_id);
+void* send(void* thread_arg);
+void* receive(void* thread_arg);
+typedef struct _thread_data_t{
+    int thread_id;
+    Receiver r;
+    Send s;
+    Cereal c;
+    SafeQueue<int> coords;
+
+}t_data;
+
 
 int main(int argc, char *argv[])
 {
@@ -19,35 +30,39 @@ int main(int argc, char *argv[])
     //pinMode (0, OUTPUT);
 
     // setup Qt GUI
-    QApplication a(argc, argv);
-    Send s;
-    s.setWindowTitle("Send");
-    s.show();
-    Receiver r;
-    r.setWindowTitle("Receive");
-    r.show();
-    Cereal c;
+    //thread_data_t data;
 
-    QObject::connect(&s, SIGNAL(draw(int,int)),
-                     &c, SLOT(in(int,int)));
-    QObject::connect(&c, SIGNAL(out(int,int)),
-                     &r, SLOT(draw(int,int)));
-    QObject::connect(&s, SIGNAL(clear_screen()),
-                     &c, SLOT(clear_screen()));
-    QObject::connect(&c, SIGNAL(clear_out()),
-                     &r, SLOT(clear_screen()));
+    QApplication a(argc, argv);
+    t_data data;
+
+    Send s;
+    data.s.setWindowTitle("Send");
+    data.s.show();
+
+    data.r.setWindowTitle("Receive");
+    data.r.show();
+
+
+    QObject::connect(&data.s, SIGNAL(draw(int,int)),
+                     &data.c, SLOT(in(int,int)));
+    QObject::connect(&data.c, SIGNAL(out(int,int)),
+                   &data.r, SLOT(draw(int,int)));
+    QObject::connect(&data.s, SIGNAL(clear_screen()),
+                     &data.c, SLOT(clear_screen()));
+    QObject::connect(&data.c, SIGNAL(clear_out()),
+                    &data.r, SLOT(clear_screen()));
 
     // starting worker thread(s)
     int rc;
     int sc;
     pthread_t send_thread;
     pthread_t receive_thread;
-    sc = pthread_create(&send_thread, NULL, send, (void*)1);
+    sc = pthread_create(&send_thread, NULL, send, static_cast<void*>(&data));
     if (sc) {
         qDebug() << "Unable to start send thread.";
         exit(1);
     }
-    rc = pthread_create(&receive_thread, NULL, receive, (void*)2);
+    rc = pthread_create(&receive_thread, NULL, receive, static_cast<void*>(&data));
     if (rc) {
         qDebug() << "Unable to start send thread.";
         exit(1);
@@ -65,22 +80,27 @@ int main(int argc, char *argv[])
     return ret;
 }
 
-void* send(void* thread_id)
+void* send(void* thread_arg)
 {
-    long tid = (long)thread_id;
-    // do something....
+    long tid = (long)1;
+
     qDebug() << "Send thread " << tid << "started.";
-
+    //queue serial data. W
     // end thread
     pthread_exit(NULL);
 }
 
-void* receive(void* thread_id)
+void* receive(void* thread_arg)
 {
-    long tid = (long)thread_id;
-    // do something....
-    qDebug() << "Receive thread " << tid << "started.";
+    long tid = (long)2;
+    t_data* my_data;
+    my_data = static_cast<t_data*>(thread_arg); // the structure data is now stored as my_data in this thread. This is the name used to access variables inside the struct.
+    my_data->coords.enqueue(5);
+    //read serialised coordinates from queue (dequeue) we have to lock it before doing this.
+    qDebug() << "Receive thread " << tid << "started." ;
+
 
     // end thread
     pthread_exit(NULL);
 }
+

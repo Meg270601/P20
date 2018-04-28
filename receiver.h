@@ -2,9 +2,10 @@
 #define RECEIVER_H
 
 #include <QWidget>
+#include <QObject>
 
 namespace Ui {
-class Receiver;
+class Receive;
 }
 
 class Receiver : public QWidget
@@ -22,7 +23,7 @@ public slots:
     void clear_screen();
 
 private:
-    Ui::Receiver *ui;
+    Ui::Receive *ui;
     std::vector<u_int16_t> pointsx;
     std::vector<u_int16_t> pointsy;
 

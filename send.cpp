@@ -47,6 +47,7 @@ void Send::paintEvent(QPaintEvent * event)
 
 void Send::on_clear_screen_button_clicked()
 {
+
     pointsx.clear();
     pointsy.clear();
     clear_screen();
