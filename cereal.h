@@ -2,6 +2,7 @@
 #define CEREAL_H
 
 #include <QObject>
+#include <safe_queue.h>
 
 class Cereal : public QObject
 {
@@ -10,6 +11,9 @@ public:
     Cereal();
     void cerealiser(int x, int y);
     void decerealiser(int bin[]);
+    int get_coord(int x);
+    SafeQueue<int> coords;
+
 
 signals:
     void out(int x, int y);
@@ -21,6 +25,8 @@ public slots:
 
 private:
     int bin[32];
+
+
     int x = 0;
     int y = 0;
 

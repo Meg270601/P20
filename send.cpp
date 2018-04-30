@@ -1,5 +1,6 @@
 #include "send.h"
 #include "ui_send.h"
+#include <safe_queue.h>
 #include <QPainter>
 #include <QDebug>
 #include <QMouseEvent>

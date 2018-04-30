@@ -14,6 +14,7 @@ private:
     int x = 0;
     int y = 0;
 signals:
+    void out(int x, int y);
     void clear_out();
 };
 

@@ -1,5 +1,6 @@
 #include "receiver.h"
 #include "ui_receive.h"
+#include <safe_queue.h>
 #include <QPainter>
 #include <QDebug>
 #include <QMouseEvent>

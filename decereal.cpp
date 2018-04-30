@@ -1,4 +1,5 @@
 #include "decereal.h"
+#include <safe_queue.h>
 #include <QDebug>
 #include <cmath>
 #include <array>
@@ -22,6 +23,7 @@ void DeCereal::decerealiser(int bin[32]) {
     if (x == 10000 & y == 10000) {
         clear_out();
     }
+    out(x,y);
 
 }
 
