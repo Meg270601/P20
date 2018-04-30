@@ -13,7 +13,7 @@ public:
     void decerealiser(int bin[]);
     int get_coord(int x);
     SafeQueue<int> coords;
-
+    bool pins[5];
 
 signals:
     void out(int x, int y);
