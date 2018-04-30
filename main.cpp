@@ -10,7 +10,7 @@
 #include "cereal.h"
 #include <safe_queue.h>
 #include <decereal.h>
-#include <QTime>
+#include <QTimer>
 
 void delay(int n);
 void* send(void* thread_arg);
@@ -49,6 +49,7 @@ int main(int argc, char *argv[])
     int cc;
     pthread_t send_thread;
     pthread_t receive_thread;
+    pthread_t clock_thread;
     sc = pthread_create(&send_thread, NULL, send, static_cast<void*>(&data));
     if (sc) {
         qDebug() << "Unable to start send thread.";
@@ -59,8 +60,8 @@ int main(int argc, char *argv[])
         qDebug() << "Unable to start receive thread.";
         exit(1);
     }
-    cc = pthread_create(&clock_thread, NULL, receive, static_cast<void*>(&data));
-    if (rc) {
+    cc = pthread_create(&clock_thread, NULL, clock, static_cast<void*>(&data));
+    if (cc) {
         qDebug() << "Unable to start clock thread.";
         exit(1);
     }
@@ -102,7 +103,7 @@ void* receive(void* thread_arg)
 {
     long tid = (long)2;
     t_data* my_data;
-    int temp[32];
+//    int temp[32];
     my_data = static_cast<t_data*>(thread_arg); // the structure data is now stored as my_data in this thread. This is the name used to access variables inside the struct.
     qDebug() << "Receive thread " << tid << "started." ;
     QObject::connect(&my_data->d, SIGNAL(clear_out()),
@@ -125,9 +126,9 @@ void* receive(void* thread_arg)
     while (1) {
         if (my_data->c.pins[0] == 1) {
             while (my_data->c.pins[0] == 1);
-            my_data->c.pins[1] = TRUE;
-            delay(5);
-            my_data->c.pins[1] = FALSE;
+            my_data->c.pins[1] = 1;
+            while (my_data->c.pins[4] == 0);
+            my_data->c.pins[1] = 0;
 
         }
     }
@@ -137,17 +138,13 @@ void* receive(void* thread_arg)
 }
 
 void* clock(void* thread_arg) {
+    t_data* my_data;
     my_data = static_cast<t_data*>(thread_arg);
     long tid = (long)3;
     qDebug() << "Clock thread " << tid << "started." ;
-    QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(toggle()));
+    QTimer *timer = new QTimer(&my_data->c);
+    QObject::connect(timer, SIGNAL(timeout()), &my_data->c, SLOT(toggle()));
     timer->start(1);
-}
-
-void delay(int n)
-{
-    QTime dieTime= QTime::currentTime().addMSecs(n);
-    while (QTime::currentTime() < dieTime)
-        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+    // end thread
+    pthread_exit(NULL);
 }

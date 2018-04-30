@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <cmath>
 #include <array>
-#include <QTime>
+#include <QTimer>
 
 void delay(int n);
 
@@ -22,16 +22,16 @@ void Cereal::cerealiser(int x, int y) {
 //        coords.enqueue(bin[i]); //adds serial data to queue.
 //    }
 
-    pins[0] = TRUE;
-    delay(5);
-    pins[0] = FALSE;
+    while (pins[4] == 0);
+    pins[0] = 1;
+    while(pins[4] == 1);
+    pins[0] = 0;
     while (pins[1] == 0);
     for (int i = 0; i < 32; i++) {
         pins[2] = bin[i];
     }
-    pins[0] = TRUE;
-    delay(5);
-    pins[0] = FALSE;
+    pins[0] = 1;
+    pins[0] = 0;
     while (pins[1] == 0);
     //decerealiser(bin);
 }
@@ -48,9 +48,6 @@ int Cereal::get_coord(int x){
     return(bin[x]);
 }
 
-void delay(int n)
-{
-    QTime dieTime= QTime::currentTime().addMSecs(n);
-    while (QTime::currentTime() < dieTime)
-        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+void Cereal::toggle() {
+    pins[4] = ~pins[4];
 }

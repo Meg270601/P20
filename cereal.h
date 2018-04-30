@@ -22,6 +22,7 @@ signals:
 public slots:
     void in(int x, int y);
     void clear_screen();
+    void toggle();
 
 private:
     int bin[32];
