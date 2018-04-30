@@ -45,8 +45,7 @@ int main(int argc, char *argv[])
     data.r.show();
 
 
-    QObject::connect(&data.s, SIGNAL(draw(int,int)),
-                     &data.c, SLOT(in(int,int)));
+   
 
     QObject::connect(&data.s, SIGNAL(clear_screen()),
                      &data.c, SLOT(clear_screen()));
@@ -86,6 +85,8 @@ void* send(void* thread_arg)
     long tid = (long)1;
     t_data* my_data;
     my_data = static_cast<t_data*>(thread_arg);
+    QObject::connect(&data.s, SIGNAL(draw(int,int)),
+                     &data.c, SLOT(in(int,int)));
 
     qDebug() << "Send thread " << tid << "started.";
     my_data->coords.enqueue(5);
