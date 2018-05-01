@@ -10,11 +10,13 @@
 #include "cereal.h"
 #include <safe_queue.h>
 #include <decereal.h>
-#include <QTimer>
+
+#include <QMutex>
 
 void delay(int n);
 void* send(void* thread_arg);
 void* receive(void* thread_arg);
+
 typedef struct _thread_data_t{
     int thread_id;
     Receiver r;
@@ -46,10 +48,9 @@ int main(int argc, char *argv[])
     // starting worker thread(s)
     int rc;
     int sc;
-    int cc;
     pthread_t send_thread;
     pthread_t receive_thread;
-    pthread_t clock_thread;
+
     sc = pthread_create(&send_thread, NULL, send, static_cast<void*>(&data));
     if (sc) {
         qDebug() << "Unable to start send thread.";
@@ -58,11 +59,6 @@ int main(int argc, char *argv[])
     rc = pthread_create(&receive_thread, NULL, receive, static_cast<void*>(&data));
     if (rc) {
         qDebug() << "Unable to start receive thread.";
-        exit(1);
-    }
-    cc = pthread_create(&clock_thread, NULL, clock, static_cast<void*>(&data));
-    if (cc) {
-        qDebug() << "Unable to start clock thread.";
         exit(1);
     }
 
@@ -103,7 +99,8 @@ void* receive(void* thread_arg)
 {
     long tid = (long)2;
     t_data* my_data;
-//    int temp[32];
+    int i;
+    int bin[32];
     my_data = static_cast<t_data*>(thread_arg); // the structure data is now stored as my_data in this thread. This is the name used to access variables inside the struct.
     qDebug() << "Receive thread " << tid << "started." ;
     QObject::connect(&my_data->d, SIGNAL(clear_out()),
@@ -111,25 +108,18 @@ void* receive(void* thread_arg)
 
     QObject::connect(&my_data->d, SIGNAL(out(int,int)),
                    &my_data->r, SLOT(draw(int,int)));
-/*    int i;
-    while(1){
-        for(i=0;i <32;i++){
-            int x = 0;
-            x =  my_data->c.coords.dequeue();
-            temp[i] = x;
-        }
-        my_data->d.decerealiser(temp);
-
-    }*/
-    //read serialised coordinates from queue (dequeue) we have to lock it before doing this.
 
     while (1) {
-        if (my_data->c.pins[0] == 1) {
-            while (my_data->c.pins[0] == 1);
-            my_data->c.pins[1] = 1;
-            while (my_data->c.pins[4] == 0);
-            my_data->c.pins[1] = 0;
-
+        i = 0;
+        while (my_data->c.get_pin(4) == 1) {
+            if (my_data->c.get_pin(0) == 1) {
+                my_data->c.set_pin(1, 1);
+                while (my_data->c.get_pin(0) == 1);
+                my_data->c.set_pin(1, 0);
+                bin[i] = my_data->c.get_pin(2);
+            }
+            i++;
+            if (i > 32) qDebug() << "Exception!";
         }
     }
 
@@ -137,14 +127,3 @@ void* receive(void* thread_arg)
     pthread_exit(NULL);
 }
 
-void* clock(void* thread_arg) {
-    t_data* my_data;
-    my_data = static_cast<t_data*>(thread_arg);
-    long tid = (long)3;
-    qDebug() << "Clock thread " << tid << "started." ;
-    QTimer *timer = new QTimer(&my_data->c);
-    QObject::connect(timer, SIGNAL(timeout()), &my_data->c, SLOT(toggle()));
-    timer->start(1);
-    // end thread
-    pthread_exit(NULL);
-}

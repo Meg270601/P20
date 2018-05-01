@@ -20,12 +20,20 @@ void DeCereal::decerealiser(int bin[32]) {
     }
     qDebug() << x << " " << y;
     //clear screen is encoded as 10000
-    if (x == 10000 & y == 10000) {
+    if ((x == 10000) & (y == 10000)) {
         clear_out();
     }
     out(x,y);
 
 }
 
-
+int DeCereal::handshake(bool pins[]) {
+    if (pins[0] == 1) {
+        pins[1] = 1;
+        while (pins[0] == 1);
+        pins[1] = 0;
+        return 0;
+    }
+    return 1;
+}
 

@@ -6,11 +6,10 @@ class DeCereal : public QObject
     Q_OBJECT
 public:
     DeCereal();
-
+    int handshake(bool pins[]);
     void decerealiser(int bin[]);
 
 private:
-
     int x = 0;
     int y = 0;
 signals:
