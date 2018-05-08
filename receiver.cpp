@@ -20,7 +20,7 @@ Receiver::~Receiver()
 
 void Receiver::paintEvent(QPaintEvent * event)
 {
-    qDebug() << "painting r";
+//    qDebug() << "painting r";
     QPainter painter(this);
     QPen pen;
     QFont font;
@@ -32,9 +32,11 @@ void Receiver::paintEvent(QPaintEvent * event)
     painter.setPen(pen);
     painter.setFont(font);
     for (int i = 0; i < pointsx.size(); i++) {
+      //  painter.drawLine(pointsx[i], pointsy[i], pointsx[i-1], pointsy[i-1]);
         painter.drawPoint(pointsx[i], pointsy[i]);
     }
 }
+
 
 void Receiver::add_x(int x) {
     pointsx.push_back(x);

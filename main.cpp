@@ -8,7 +8,7 @@
 #include "send.h"
 #include "receiver.h"
 #include "cereal.h"
-#include <safe_queue.h>
+//#include <safe_queue.h>
 #include <decereal.h>
 
 #include <QMutex>
@@ -16,15 +16,22 @@
 void delay(int n);
 void* send(void* thread_arg);
 void* receive(void* thread_arg);
+void set_pin(int i, int x);
+int get_pin(int i);
+bool pins[5];
+QMutex Mutex2;
 
-typedef struct _thread_data_t{
+struct s_data{
     int thread_id;
-    Receiver r;
     Send s;
     Cereal c;
+};
+struct r_data{
+    int thread_id;
+    Receiver r;
     DeCereal d;
+};
 
-}t_data;
 
 
 int main(int argc, char *argv[])
@@ -37,13 +44,14 @@ int main(int argc, char *argv[])
     // setup Qt GUI
 
     QApplication a(argc, argv);
-    t_data data;
+    s_data s_data;
+    r_data r_data;
 
-    data.s.setWindowTitle("Send");
-    data.s.show();
+    s_data.s.setWindowTitle("Send");
+    s_data.s.show();
 
-    data.r.setWindowTitle("Receive");
-    data.r.show();
+    r_data.r.setWindowTitle("Receive");
+    r_data.r.show();
 
     // starting worker thread(s)
     int rc;
@@ -51,12 +59,12 @@ int main(int argc, char *argv[])
     pthread_t send_thread;
     pthread_t receive_thread;
 
-    sc = pthread_create(&send_thread, NULL, send, static_cast<void*>(&data));
+    sc = pthread_create(&send_thread, NULL, send, static_cast<void*>(&s_data));
     if (sc) {
         qDebug() << "Unable to start send thread.";
         exit(1);
     }
-    rc = pthread_create(&receive_thread, NULL, receive, static_cast<void*>(&data));
+    rc = pthread_create(&receive_thread, NULL, receive, static_cast<void*>(&r_data));
     if (rc) {
         qDebug() << "Unable to start receive thread.";
         exit(1);
@@ -77,17 +85,36 @@ int main(int argc, char *argv[])
 void* send(void* thread_arg)
 {
     long tid = (long)1;
-    t_data* my_data;
-    my_data = static_cast<t_data*>(thread_arg);
+    s_data* my_data;
+    my_data = static_cast<s_data*>(thread_arg);
 
 
     qDebug() << "Send thread " << tid << "started.";
     QObject::connect(&my_data->s, SIGNAL(clear_screen()),
                      &my_data->c, SLOT(clear_screen()));
     QObject::connect(&my_data->s, SIGNAL(draw(int,int)),
-                         &my_data->c, SLOT(in(int,int)));
-    while(1){
-
+                         &my_data->c, SLOT(in(int,int,bool[])));
+    while(my_data->c.get_packet()){
+        Mutex2.lock();
+        pins[4] = 1;
+        Mutex2.unlock();
+    //    qDebug() << "starting transmission";
+        for (int i = 0; i < 32; i++) {
+            Mutex2.lock();
+            pins[2] = my_data->c.bin[i];
+            pins[0] = 1;
+            Mutex2.unlock();
+    //        qDebug() << "handshake1";
+            while (pins[1] == 0);
+            Mutex2.lock();
+            pins[0] = 0;
+            Mutex2.unlock();
+            while (pins[1] == 1);
+        }
+        my_data->c.set_packet(0);
+        Mutex2.lock();
+        pins[4] = 0;
+        Mutex2.unlock();
     }
     //
     //queue serial data. W
@@ -98,10 +125,10 @@ void* send(void* thread_arg)
 void* receive(void* thread_arg)
 {
     long tid = (long)2;
-    t_data* my_data;
+    r_data* my_data;
     int i;
     int bin[32];
-    my_data = static_cast<t_data*>(thread_arg); // the structure data is now stored as my_data in this thread. This is the name used to access variables inside the struct.
+    my_data = static_cast<r_data*>(thread_arg); // the structure data is now stored as my_data in this thread. This is the name used to access variables inside the struct.
     qDebug() << "Receive thread " << tid << "started." ;
     QObject::connect(&my_data->d, SIGNAL(clear_out()),
                     &my_data->r, SLOT(clear_screen()));
@@ -111,19 +138,37 @@ void* receive(void* thread_arg)
 
     while (1) {
         i = 0;
-        while (my_data->c.get_pin(4) == 1) {
-            if (my_data->c.get_pin(0) == 1) {
-                my_data->c.set_pin(1, 1);
-                while (my_data->c.get_pin(0) == 1);
-                my_data->c.set_pin(1, 0);
-                bin[i] = my_data->c.get_pin(2);
+        while (get_pin(4) == 1) {
+            if (get_pin(0) == 1) {
+                bin[i] = get_pin(2);
+                set_pin(1, 1);
+//                qDebug() << "handshake2";
+                while (get_pin(0) == 1);
+                set_pin(1, 0);
+                i++;
             }
-            i++;
             if (i > 32) qDebug() << "Exception!";
         }
+        my_data->d.decerealiser(bin);
     }
 
     // end thread
     pthread_exit(NULL);
+}
+int get_pin(int i){
+    Mutex2.lock();
+//    qDebug() << "lock";
+   int x = pins[i];
+   Mutex2.unlock();
+//   qDebug() << "unlock";
+    return x;
+
+}
+void set_pin(int i,int x){
+    Mutex2.lock();
+//    qDebug() << "lock";
+    pins[i] = x;
+    Mutex2.unlock();
+//    qDebug() << "unlock";
 }
 

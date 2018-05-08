@@ -21,7 +21,7 @@ Send::~Send()
 void Send::mouseMoveEvent(QMouseEvent * cursor)
 {
     // get click position
-    qDebug() << "Mouse x " << cursor->x() << " Mouse y " << cursor->y();
+//    qDebug() << "Mouse x " << cursor->x() << " Mouse y " << cursor->y();
     pointsy.push_back(cursor->y());
     pointsx.push_back(cursor->x());
 //    count++;
@@ -30,7 +30,7 @@ void Send::mouseMoveEvent(QMouseEvent * cursor)
 }
 void Send::paintEvent(QPaintEvent * event)
 {
-   qDebug() << "painting s";
+//   qDebug() << "painting s";
    QPainter painter(this);
    QPen pen;
    QFont font;
@@ -42,7 +42,8 @@ void Send::paintEvent(QPaintEvent * event)
    painter.setPen(pen);
    painter.setFont(font);
    for (int i = 0; i < pointsx.size(); i++) {
-    painter.drawPoint(pointsx[i], pointsy[i]);
+    //painter.drawLine(pointsx[i], pointsy[i], pointsx[i-1], pointsy[i-1]);
+       painter.drawPoint(pointsx[i], pointsy[i]);
    }
 }
 
