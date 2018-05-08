@@ -5,7 +5,7 @@
 #include <QObject>
 
 namespace Ui {
-class Receive;
+class Receiver;
 }
 
 class Receiver : public QWidget
