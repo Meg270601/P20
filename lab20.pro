@@ -15,15 +15,15 @@ TEMPLATE = app
 SOURCES += main.cpp \
     send.cpp \
     cereal.cpp \
-    receiver.cpp \
-    decereal.cpp
+    decereal.cpp \
+    receive.cpp
 
 HEADERS  += \
     send.h \
     cereal.h \
-    receiver.h \
     safe_queue.h \
-    decereal.h
+    decereal.h \
+    receive.h
 
 FORMS    += \
     send.ui \

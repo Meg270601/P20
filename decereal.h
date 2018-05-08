@@ -8,6 +8,7 @@ public:
     DeCereal();
     int handshake(bool pins[]);
     void decerealiser(int bin[]);
+    //SafeQueue<int> coords;
 
 private:
     int x = 0;
