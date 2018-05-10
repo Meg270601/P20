@@ -23,9 +23,9 @@ void Send::mouseMoveEvent(QMouseEvent * cursor)
 //    qDebug() << "Mouse x " << cursor->x() << " Mouse y " << cursor->y();
     pointsy.push_back(cursor->y());
     pointsx.push_back(cursor->x());
-//    count++;
-    draw(cursor->x(), cursor->y());
     update();
+    draw(cursor->x(), cursor->y());
+
 }
 void Send::paintEvent(QPaintEvent * event)
 {
@@ -40,7 +40,7 @@ void Send::paintEvent(QPaintEvent * event)
    pen.setColor(color);
    painter.setPen(pen);
    painter.setFont(font);
-   for (int i = 0; i < pointsx.size(); i++) {
+   for (u_int i = 0; i < pointsx.size(); i++) {
     //painter.drawLine(pointsx[i], pointsy[i], pointsx[i-1], pointsy[i-1]);
        painter.drawPoint(pointsx[i], pointsy[i]);
    }
@@ -52,12 +52,4 @@ void Send::on_clear_screen_button_clicked()
     pointsy.clear();
     clear_screen();
     update();
-}
-
-int Send::get_x(int i) {
-    return pointsx[i];
-}
-
-int Send::get_y(int i) {
-    return pointsy[i];
 }

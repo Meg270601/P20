@@ -1,5 +1,4 @@
 #include "decereal.h"
-//#include <safe_queue.h>
 #include <QDebug>
 #include <cmath>
 #include <array>
@@ -25,16 +24,5 @@ void DeCereal::decerealiser(int bin[32]) {
     }
     out(x,y);
 
-}
-
-int DeCereal::handshake(bool pins[]) {
-    qDebug() << "handshake2";
-    if (pins[0] == 1) {
-        pins[1] = 1;
-        while (pins[0] == 1);
-        pins[1] = 0;
-        return 0;
-    }
-    return 1;
 }
 

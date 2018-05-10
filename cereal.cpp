@@ -1,5 +1,4 @@
 #include "cereal.h"
-//#include <safe_queue.h>
 #include <QDebug>
 #include <cmath>
 #include <array>
@@ -20,13 +19,13 @@ void Cereal::cerealiser(int x, int y) {
     Mutex.lock();
     pins[4] = 1;
     Mutex.unlock();
-//    qDebug() << "starting transmission";
+    qDebug() << "starting transmission";
     for (int i = 0; i < 32; i++) {
         Mutex.lock();
         pins[2] = bin[i];
         pins[0] = 1;
         Mutex.unlock();
-//        qDebug() << "handshake1";
+        qDebug() << "handshake1";
         while (pins[1] == 0);
         Mutex.lock();
         pins[0] = 0;
@@ -49,14 +48,6 @@ void Cereal::clear_screen() {
     cerealiser(10000, 10000);
 }
 
-int Cereal::handshake() {
-    qDebug() <<"handshake1";
-
-    pins[0] = 1;
-    while (pins[1] == 0);
-    pins[0] = 0;
-    return 0;
-}
 int Cereal::get_pin(int i){
     Mutex.lock();
 //    qDebug() << "lock";

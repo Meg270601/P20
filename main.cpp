@@ -6,11 +6,11 @@
 #include <queue>
 #include <iostream>
 #include "send.h"
-#include "receiver.h"
+#include "receive.h"
 #include "cereal.h"
-//#include <safe_queue.h>
 #include <decereal.h>
-
+#include <thread>
+#include <chrono>
 #include <QMutex>
 
 void delay(int n);
@@ -19,7 +19,7 @@ void* receive(void* thread_arg);
 
 typedef struct _thread_data_t{
     int thread_id;
-    Receiver r;
+    Receive r;
     Send s;
     Cereal c;
     DeCereal d;
@@ -86,12 +86,7 @@ void* send(void* thread_arg)
                      &my_data->c, SLOT(clear_screen()));
     QObject::connect(&my_data->s, SIGNAL(draw(int,int)),
                          &my_data->c, SLOT(in(int,int)));
-//    while(1){
 
-//    }
-    //
-    //queue serial data. W
-    // end thread
     pthread_exit(NULL);
 }
 
@@ -111,11 +106,12 @@ void* receive(void* thread_arg)
 
     while (1) {
         i = 0;
+        std::this_thread::sleep_for (std::chrono::milliseconds(5));
         while (my_data->c.get_pin(4) == 1) {
             if (my_data->c.get_pin(0) == 1) {
                 bin[i] = my_data->c.get_pin(2);
                 my_data->c.set_pin(1, 1);
-//                qDebug() << "handshake2";
+                qDebug() << "handshake2";
                 while (my_data->c.get_pin(0) == 1);
                 my_data->c.set_pin(1, 0);
                 i++;
